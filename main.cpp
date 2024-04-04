@@ -1,6 +1,7 @@
 #include <iostream>
 #include <utility>
 #include <array>
+#include <random>
 
 enum SquareOwner { none, red, blue};
 
@@ -17,10 +18,10 @@ typedef std::array<int, 2> position;
 class Player {
 public:
 	void setColor(SquareOwner color_){
-		color = color;
+		color = color_;
 	}
 	virtual position Move(BoardArray board, Error error) { return { -1,-1 }; }
-private:
+protected:
 	SquareOwner color;
 };
 
@@ -96,7 +97,6 @@ public:
 	void TryMove(Player* player, SquareOwner color, bool first = false) {
 		Error error = null;
 		board.Display();
-		error = board.Set(player->Move(board.GetBoard(), error),color, first,1+first*2);
 		while (error != null) {
 			error = board.Set(player->Move(board.GetBoard(), error), color, first,1+first*2);
 		}
@@ -106,9 +106,12 @@ public:
 		TryMove(bluePlayer, blue, true);
 		while (board.CheckWin() == none) {
 			TryMove(redPlayer, red, false);
+			if(board.CheckWin() != none) {
+				break;
+			}
 			TryMove(bluePlayer, blue, false);
 		}
-		std::cout << board.CheckWin() << "wins!";
+		std::cout << "Player " << board.CheckWin() << " wins!";
 	}
 private:
 	Player* redPlayer;
@@ -130,9 +133,28 @@ class Human : public Player {
 	}
 };
 
+class BadBot : public Player {
+	position Move(BoardArray board, Error error) {
+		std::array<int, 2> pos = { 3,3 };
+		int max = 0;
+		for (int y = 0; y < 5; y++) {
+			for (int x = 0; x < 5; x++) {
+				Square square = board[y][x];
+				if (square.owner == color) {
+					if (square.level > max) {
+						max = square.level;
+						pos = { x,y };
+					}
+				}
+			}
+		}
+		return pos;
+	}
+};
+
 int main() {
 	Human h1;
-	Human h2;
+	BadBot h2;
 	Player* p1 = &h1;
 	Player* p2 = &h2;
 	GameHandler Game(p1,p2);
