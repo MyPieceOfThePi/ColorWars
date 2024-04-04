@@ -97,6 +97,7 @@ public:
 	void TryMove(Player* player, SquareOwner color, bool first = false) {
 		Error error = null;
 		board.Display();
+		error = board.Set(player->Move(board.GetBoard(), error), color, first,1+first*2);
 		while (error != null) {
 			error = board.Set(player->Move(board.GetBoard(), error), color, first,1+first*2);
 		}
