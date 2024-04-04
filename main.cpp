@@ -1,4 +1,4 @@
-﻿#include <iostream>
+#include <iostream>
 #include <utility>
 #include <array>
 
@@ -45,9 +45,9 @@ public:
 			}
 		}
 
-		Square* square = &board[pos[0]][pos[1]];
+		Square* square = &board[pos[1]][pos[0]];
 
-		if (((*square).owner != owner && !force) || (force && owner != (*square).owner && (*square).owner != none)) {
+		if (((*square).owner != owner && !force)) {
 			return noPermission;
 		}
 
